@@ -1,0 +1,30 @@
+<div class="container mt-5">
+    <div class="col-md-8 mx-auto">
+        <div class="heading text-center">
+            <h1 class="display-4 "> Login</h1>
+        </div>
+        <form action='/login' method="POST">
+            <div class="form-group pt-3">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    name="email" placeholder="Enter email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                    placeholder="Password">
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <a href="/signup">Create a new account?</a>
+                </div>
+                <div class="col-md-8">
+
+                    <button type="submit " class="btn btn-primary text-center pl-5 pr-5">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
