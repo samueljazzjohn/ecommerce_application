@@ -4,6 +4,9 @@
             <h1 class="display-4 "> Login</h1>
         </div>
         <form action='/login' method="POST">
+        {{#if loginErr}}
+            <p class="error text-danger ">{{loginErr}}</p>
+        {{/if}}
             <div class="form-group pt-3">
                 <label for="exampleInputEmail1">Email address</label>
                 <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
@@ -20,9 +23,9 @@
                 <div class="col-md-4">
                     <a href="/signup">Create a new account?</a>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 ml-auto">
 
-                    <button type="submit " class="btn btn-primary text-center pl-5 pr-5">Submit</button>
+                    <button type="submit " class="btn btn-primary text-center pl-5 pr-5">Login</button>
                 </div>
             </div>
         </form>

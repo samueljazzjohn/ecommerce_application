@@ -24,6 +24,8 @@
                     <td>{{this.description}}</td>
                     <td>{{this.price}}</td>
                     <td><img style="width: 6em;height: 6em;" src="/product-images/{{this._id}}.jpg" alt=""></td>
+                    <td class="text-center "><a href="/admin/edit-product" class="btn btn-primary align-self-center">edit</a></td>
+                    <td class="text-center "><a href="/admin/delete-product/{{this._id}}" class="btn btn-danger align-self-center" onclick="return confirm('Are you wnat to delete {{this.phName}}?')">delete</a></td>
                 </tr>
                 {{/each}}
             </tbody>
