@@ -1,10 +1,12 @@
 <section>
     <div class="container mt-5">
-        <div class="col-md-7">
+        <div class="col-md-7 mx-auto">
+            <p class="h1 text-center pb-2 pt-2">Add product</p>
             <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="phoneName">Name</label>
-                    <input type="text" class="form-control" id="phName" name="phName" aria-describedby="emailHelp" placeholder="Enter Phone Name">
+                    <input type="text" class="form-control" id="phName" name="phName" aria-describedby="emailHelp"
+                        placeholder="Enter Phone Name">
                 </div>
                 <div class="form-group">
                     <label for="Category">Category</label>
@@ -27,7 +29,7 @@
                         <span class="input-group-text" id="">Upload</span>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success">Submit</button>
+                <button type="submit" class="btn btn-success btn-block">Submit</button>
             </form>
         </div>
     </div>
