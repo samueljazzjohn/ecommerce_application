@@ -1,1 +1,25 @@
-<h2 align="center">Cart is empty</h2>
+<section>
+    <div class="container">
+        <table class="table mt-5 col-md-10 mx-auto">
+            <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Quatity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each products}}
+                <tr class="pt-2 class=" my-auto"">
+                    <td><img src="/product-images/{{this._id}}.jpg"
+                            alt="" style="width: 4em;height:4em;"></td>
+                    <td>{{this.phName}}</td>
+                    <td><button class="cart-item-count mr-3">-</button>1 <button class="cart-item-count ml-3">+</button>
+                    </td>
+                    <td><a href="" class="btn btn-danger">Remove</a></td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
