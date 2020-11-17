@@ -1,7 +1,8 @@
 const { response } = require('express');
 var express = require('express');
 var router = express.Router();
-var productHelpers=require('../helpers/product-helpers')
+var productHelpers=require('../helpers/product-helpers');
+const { changeProductQuatity } = require('../helpers/user-helper');
 var userHelper=require('../helpers/user-helper')
 
 const verifyLogin=(req,res,next)=>{
@@ -68,8 +69,23 @@ router.get('/cart/',verifyLogin,async(req,res,next)=>{
 
 })
 router.get('/add-to-cart/:id',(req,res,next)=>{
-  console.log("api call");
+  // console.log("api call");
   userHelper.addToCart(req.params.id,req.session.user._id).then(()=>{
+    res.json({status:true})
+  })
+})
+
+
+
+router.post('/change-product-quantity',(req,res,next)=>{
+  userHelper.changeProductQuatity(req.body).then((response)=>{
+    res.json({response})
+  })
+})
+
+router.post('/remove-cart-product',(req,res,next)=>{
+  console.log(req.body);
+  userHelper.removeCartProduct(req.body).then((response)=>{
     res.json({status:true})
   })
 })
