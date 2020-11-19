@@ -15,7 +15,7 @@ router.get('/add-product', function (req, res, next) {
   res.render('admin/add_product')
 })
 router.post('/add-product', (req, res) => {
-
+  req.body.price=parseInt(req.body.price)
   productHelpers.addproduct(req.body, (id) => {
     let image = req.files.image
     image.mv('./public/product-images/' + id + '.jpg', (err, done) => {
