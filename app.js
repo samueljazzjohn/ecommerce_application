@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+var bodyParser = require('body-parser');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -16,9 +17,7 @@ Handlebars.registerHelper("inc", function(value, options)
 {
     return parseInt(value) + 1;
 });
-
 var app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('hbs', hbs({extname:'hbs',defaultLayout: 'main',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}));
@@ -26,6 +25,11 @@ app.set('view engine', 'hbs');
 // app.engine('hbs',hbs({extname:'hbs',defualtLayout:'main',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
 app.use(logger('dev'));
 app.use(express.json());
+// app.use(express.bodyParser());
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));

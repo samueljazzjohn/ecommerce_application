@@ -78,8 +78,8 @@ module.exports={
         })
     },
     getCartProduct: (userId) => {
-        return new Promise(async (resolve, reject) => {
-            let cartItems = await db.get().collection(collection.CART_COLLECTION).aggregate([
+        return new Promise( (resolve, reject) => {
+            db.get().collection(collection.CART_COLLECTION).aggregate([
                 {
                     $match: { user: objectId(userId) }
                 },
@@ -102,11 +102,14 @@ module.exports={
                 },
                 {
                     $project:{
-                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        item:1,quantity:1,productName:{$arrayElemAt:['$product',0]}
                     }
                 }
-            ]).toArray()
-            resolve(cartItems)
+            ]).toArray().then((cartItems)=>{
+                console.log(cartItems);
+                resolve(cartItems)
+            })
+
         })
     },
     getCartCount:(userId)=>{
@@ -138,7 +141,7 @@ module.exports={
                     {
                         $inc: { 'products.$.quantity': details.count }
                     }).then((response) => {
-                        resolve(true)
+                        resolve({state:true})
                     })
             }
         })
@@ -159,7 +162,7 @@ module.exports={
     },
     getTotalAmount:(userId)=>{
         return new Promise(async (resolve, reject) => {
-            let total = await db.get().collection(collection.CART_COLLECTION).aggregate([
+            let Total = await db.get().collection(collection.CART_COLLECTION).aggregate([
                 {
                     $match: { user: objectId(userId) }
                 },
@@ -192,8 +195,37 @@ module.exports={
                     }
                 }
             ]).toArray()
-            console.log(total[0].total);
-            resolve(total[0].total)
+            console.log(Total[0].total);
+            resolve(Total[0].total)
+        })
+    },
+    placeOrder:(order,product,total)=>{
+        return new Promise((resolve,reject)=>{
+            console.log(order,product,total);
+            let orderStatus=order.payment==='COD'?'placed':'pending'
+            let orderObj={
+                delivaryDetails:{
+                    mobile:order.mobile,
+                    address:order.address,
+                    pincode:order.pin
+                },
+                userId:objectId(order.userId),
+                paymentMethode:order.payment,
+                products:product,
+                totalAmount:total,
+                orderStatus:orderStatus
+            }
+            db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response)=>{
+                db.get().collection(collection.CART_COLLECTION).removeOne({user:objectId(order.userId)})
+                resolve()
+            })
+        })
+    },
+    getCartProductList:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let cartItems=await db.get().collection(collection.CART_COLLECTION).findOne({user:objectId(userId)})
+            console.log(cartItems.products);
+            resolve(cartItems.products)
         })
     }
 }
