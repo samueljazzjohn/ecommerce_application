@@ -3,6 +3,11 @@ var collection=require('../config/collections')
 var bcrypt=require('bcrypt')
 const { response } = require('express')
 var objectId = require('mongodb').ObjectID
+const Razorpay=require('razorpay')
+var instance = new Razorpay({
+    key_id: 'rzp_test_YZwY2AMZMjApuL',
+    key_secret: 'RqAxVqshRunimB7EljPyJ7Yz',
+  });
 
 module.exports={
 
@@ -102,11 +107,10 @@ module.exports={
                 },
                 {
                     $project:{
-                        item:1,quantity:1,productName:{$arrayElemAt:['$product',0]}
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
                     }
                 }
             ]).toArray().then((cartItems)=>{
-                console.log(cartItems);
                 resolve(cartItems)
             })
 
@@ -199,33 +203,94 @@ module.exports={
             resolve(Total[0].total)
         })
     },
-    placeOrder:(order,product,total)=>{
+    placeOrder: (order,product,total)=>{
         return new Promise((resolve,reject)=>{
-            console.log(order,product,total);
+            // console.log(order,product,total);
             let orderStatus=order.payment==='COD'?'placed':'pending'
             let orderObj={
                 delivaryDetails:{
                     mobile:order.mobile,
-                    address:order.address,
+                    address:order.Address,
                     pincode:order.pin
                 },
                 userId:objectId(order.userId),
                 paymentMethode:order.payment,
                 products:product,
                 totalAmount:total,
-                orderStatus:orderStatus
+                orderStatus:orderStatus,
+                date:new Date()
             }
             db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response)=>{
                 db.get().collection(collection.CART_COLLECTION).removeOne({user:objectId(order.userId)})
-                resolve()
+                resolve(response.ops[0]._id)
             })
         })
     },
     getCartProductList:(userId)=>{
         return new Promise(async(resolve,reject)=>{
-            let cartItems=await db.get().collection(collection.CART_COLLECTION).findOne({user:objectId(userId)})
+            let cartItems=await db.get().collection(collection.CART_COLLECTION)
+            .findOne({user:objectId(userId)})
             console.log(cartItems.products);
             resolve(cartItems.products)
+        })
+    },
+    getUserOrders:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let orders=await db.get().collection(collection.ORDER_COLLECTION)
+                .find({userId:objectId(userId)}).toArray()
+            console.log(orders);
+            resolve(orders)
+        })
+    },
+    getOrderProducts:(orderId)=>{
+        return new Promise( (resolve, reject) => {
+            db.get().collection(collection.ORDER_COLLECTION).aggregate([
+                {
+                    $match: { _id: objectId(orderId) }
+                },
+                {
+                    $unwind: '$products'
+                },
+                {
+                    $project: {
+                        item: '$products.item',
+                        quantity: '$products.quantity'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: collection.PRODUCT_COLLECTION,
+                        localField: 'item',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }
+                }
+            ]).toArray().then((orderItems)=>{
+                resolve(orderItems)
+            })
+
+        })
+    },
+    generateRazorpay:(orderId,totalAmount)=>{
+        return new Promise((resolve, reject) => {
+            var options = {
+                amount: totalAmount,  // amount in the smallest currency unit  
+                currency: "INR",
+                receipt: ""+orderId
+            };
+            instance.orders.create(options, function (err, order) {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log(order);
+                    resolve(order)
+                }
+            });
         })
     }
 }
