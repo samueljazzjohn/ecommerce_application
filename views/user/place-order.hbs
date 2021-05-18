@@ -1,6 +1,6 @@
 <section>
     <div class="contianer">
-        <form action="" id="checkout-form" method="POST">
+        <form action="" id="checkout-form" method="post">
             <div class="row">
                 <div class="col-md-5 ml-5 mt-4">
                     <h2 class="text-center">Enter delivary detials</h2>
@@ -45,18 +45,20 @@
     </div>
 </section>
 
-
 <script>
     $("#checkout-form").submit((e)=>{
-        e.preventDefault()
+        e.preventDefault();
         $.ajax({
             url:'/place-order',
             method:'post',
             data:$("#checkout-form").serialize(),
             success:(response)=>{
                 if(response.CodSuccess){
+                    console.log("cod methode")
                     location.href='/order-success'
                 }else{
+                    console.log("payondelivery methode")
+                    console.log(response)
                     razorPayment(response)
                 }
             }
@@ -72,9 +74,6 @@
                 "image": "https://example.com/your_logo",
                 "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                 "handler": function (response) {
-                    alert(response.razorpay_payment_id);
-                    alert(response.razorpay_order_id);
-                    alert(response.razorpay_signature);
 
                     verifyPayment(response,order)
                 },
@@ -106,9 +105,17 @@
             $.ajax({
                 url:'/verify-payment',
                 data:{
-                    payment,order
+                    payment,
+                    order
                 },
-                method:'post'
+                method:'post',
+                success:(response)=>{
+                    if(response.status){
+                        location.href='/order-success'
+                    }else{
+                        alert("payment failed")
+                    }
+                }
             })
         }
 </script>
